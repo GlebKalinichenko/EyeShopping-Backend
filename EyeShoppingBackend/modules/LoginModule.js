@@ -21,10 +21,10 @@ var LoginModule = {
     /**
      * SQL query for insert new wallet
      * */
-    insertWallet: function (email, password, firstName, lastName, callback) {
+    insertWallet: function (email, password, firstName, lastName, type_id, callback) {
         var hashPassword = bcrypt.hashSync(password, 10)
-        var values = [firstName, lastName, email, hashPassword]
-        mysqlDb.query("INSERT INTO Wallets (first_name, last_name, email, password) VALUES (?, ?, ?, ?)", values, callback)
+        var values = [firstName, lastName, email, hashPassword, type_id]
+        mysqlDb.query("INSERT INTO Wallets (first_name, last_name, email, password, type_id) VALUES (?, ?, ?, ?, ?)", values, callback)
     },
 
     selectAllMerchantsByEmail: function(email, callback) {
@@ -34,10 +34,10 @@ var LoginModule = {
     /**
      * SQL query for insert new merchant
      * */
-    insertMerchant: function (email, password, firstName, lastName, callback) {
+    insertMerchant: function (email, password, firstName, lastName, type_id, callback) {
         var hashPassword = bcrypt.hashSync(password, 10)
-        var values = [firstName, lastName, email, hashPassword]
-        mysqlDb.query("INSERT INTO Merchants (first_name, last_name, email, password) VALUES (?, ?, ?, ?)", values, callback)
+        var values = [firstName, lastName, email, hashPassword, type_id]
+        mysqlDb.query("INSERT INTO Merchants (first_name, last_name, email, password, type_id) VALUES (?, ?, ?, ?, ?)", values, callback)
     },
 }
 
