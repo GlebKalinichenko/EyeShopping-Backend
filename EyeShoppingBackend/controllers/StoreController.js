@@ -59,8 +59,24 @@ storeController.updateStore = function (req, res) {
 };
 
 storeController.deleteStore = function (req, res) {
+    var authHeader = req.header('authorization')
+    var decodedHeader = jwt.verify(authHeader, config.secret)
+    var merchantId = decodedHeader.merchant_id
+    var typeId = decodedHeader.type_id
+
     var storeId = req.params.storeId
-    var a = {}
+
+    if (typeConfig.wallet_type_id == typeId) {
+        res.status(404).json({'message': 'Only merchant can create store'})
+        return
+    }
+
+    StoreModule.deleteStore(storeId, function (err, rows) {
+        if (err) res.json(err)
+        else {
+            res.status(200).json(rows)
+        }
+    })
 }
 
 module.exports = storeController

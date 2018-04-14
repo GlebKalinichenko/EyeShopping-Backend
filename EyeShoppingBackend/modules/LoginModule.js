@@ -2,13 +2,6 @@ var mysqlDb = require('../database_utils/mysqlconnection')
 var bcrypt = require('bcrypt')
 
 var LoginModule = {
-    getAllWallets: function (callback) {
-        mysqlDb.query("SELECT * FROM Wallets;", callback)
-    },
-
-    selectAllWalletsByEmail: function(email, callback) {
-        mysqlDb.query("SELECT * FROM Wallets WHERE email = ?", email, callback)
-    },
 
     compareHashPassword: function(password, existedHashPassword, callback) {
         if(bcrypt.compareSync(password, existedHashPassword)) {
@@ -21,24 +14,10 @@ var LoginModule = {
     /**
      * SQL query for insert new wallet
      * */
-    insertWallet: function (email, password, firstName, lastName, type_id, callback) {
-        var hashPassword = bcrypt.hashSync(password, 10)
+    insertWallet: function (email, password, hashPassword, firstName, lastName, type_id, callback) {
         var values = [firstName, lastName, email, hashPassword, type_id]
         mysqlDb.query("INSERT INTO Wallets (first_name, last_name, email, password, type_id) VALUES (?, ?, ?, ?, ?)", values, callback)
-    },
-
-    selectAllMerchantsByEmail: function(email, callback) {
-        mysqlDb.query("SELECT * FROM Merchants WHERE email = ?", email, callback)
-    },
-
-    /**
-     * SQL query for insert new merchant
-     * */
-    insertMerchant: function (email, password, firstName, lastName, type_id, callback) {
-        var hashPassword = bcrypt.hashSync(password, 10)
-        var values = [firstName, lastName, email, hashPassword, type_id]
-        mysqlDb.query("INSERT INTO Merchants (first_name, last_name, email, password, type_id) VALUES (?, ?, ?, ?, ?)", values, callback)
-    },
+    }
 }
 
 module.exports = LoginModule

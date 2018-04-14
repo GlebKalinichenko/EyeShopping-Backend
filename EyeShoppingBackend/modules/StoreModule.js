@@ -15,6 +15,11 @@ var StoreModule = {
     updateStore: function (name, description, address, merchantId, storeId, callback) {
         var values = [name, description, address, merchantId, storeId]
         mysqlDb.query("UPDATE Stores SET name = ?, description = ?, address = ?, merchant_id = ? WHERE id = ?", values, callback)
+    },
+
+    deleteStore: function (storeId, callback) {
+        var values = [storeId]
+        mysqlDb.query("DELETE FROM Stores WHERE id = ?", values, callback)
     }
 }
 

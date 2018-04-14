@@ -1,6 +1,10 @@
-var LoginModule = require("../modules/LoginModule");
-var jwt = require('jsonwebtoken');
+var LoginModule = require("../modules/LoginModule")
+var WalletModule = require("../modules/WalletModule")
+var MerchantModule = require("../modules/MerchantModule")
+var jwt = require('jsonwebtoken')
 var config = require("../database_utils/config")
+var bcrypt = require('bcrypt')
+
 var loginController = {};
 
 /**
@@ -13,13 +17,14 @@ loginController.signUpWallet = function (req, res) {
     var password = req.body.password
     var typeId = 2
 
-    LoginModule.selectAllWalletsByEmail(email, function (err, users) {
+    WalletModule.selectAllWalletsByEmail(email, function (err, users) {
         if(err) {
             res.json(err);
         }
         else {
             if (users.length == 0) {
-                LoginModule.insertWallet(email, password, firstName, lastName, typeId, function (err, rows) {
+                var hashPassword = bcrypt.hashSync(password, 10)
+                LoginModule.insertWallet(email, password, hashPassword, firstName, lastName, typeId, function (err, rows) {
                     if(err) {
                         res.json(err);
                     }
@@ -48,7 +53,7 @@ loginController.signInWallet = function (req, res) {
     var password = req.body.password
     var typeId = 2
 
-    LoginModule.selectAllWalletsByEmail(email, function (err, users) {
+    WalletModule.selectAllWalletsByEmail(email, function (err, users) {
         if(err) {
             res.json(err);
         }
@@ -80,7 +85,7 @@ loginController.signInMerchant = function (req, res) {
     var password = req.body.password
     var typeId = 1
 
-    LoginModule.selectAllMerchantsByEmail(email, function (err, users) {
+    MerchantModule.selectAllMerchantsByEmail(email, function (err, users) {
         if(err) {
             res.json(err);
         }
@@ -114,13 +119,14 @@ loginController.signUpMerchant = function (req, res) {
     var password = req.body.password
     var typeId = 1
 
-    LoginModule.selectAllMerchantsByEmail(email, function (err, users) {
+    MerchantModule.selectAllMerchantsByEmail(email, function (err, users) {
         if(err) {
             res.json(err);
         }
         else {
             if (users.length == 0) {
-                LoginModule.insertMerchant(email, password, firstName, lastName, typeId, function (err, rows) {
+                var hashPassword = bcrypt.hashSync(password, 10)
+                MerchantModule.insertMerchant(email, password, hashPassword, firstName, lastName, typeId, function (err, rows) {
                     if(err) {
                         res.json(err);
                     }
