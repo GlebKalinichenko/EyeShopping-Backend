@@ -31,7 +31,7 @@ loginController.signUpWallet = function (req, res) {
                         }
                         else {
                             var payload = {
-                                'wallet': rows.insertId,
+                                'wallet_id': rows.insertId,
                                 'type_id': typeId
                             }
                             var token = jwt.sign(payload, config.secret);
