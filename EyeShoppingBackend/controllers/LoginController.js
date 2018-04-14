@@ -1,6 +1,6 @@
-var LoginModule = require("../modules/LoginModule")
 var WalletModule = require("../modules/WalletModule")
 var MerchantModule = require("../modules/MerchantModule")
+var SecurityUtils = require("../utils/SecurityUtils")
 var jwt = require('jsonwebtoken')
 var config = require("../database_utils/config")
 var bcrypt = require('bcrypt')
@@ -23,19 +23,21 @@ loginController.signUpWallet = function (req, res) {
         }
         else {
             if (users.length == 0) {
-                var hashPassword = bcrypt.hashSync(password, 10)
-                LoginModule.insertWallet(email, password, hashPassword, firstName, lastName, typeId, function (err, rows) {
-                    if(err) {
-                        res.json(err);
-                    }
-                    else {
-                        var payload = {
-                            'wallet': rows.insertId,
-                            'type_id': typeId
+                //var hashPassword = bcrypt.hashSync(password, 10)
+                SecurityUtils.createHashPassword(password, function (hashPassword) {
+                    WalletModule.insertWallet(email, password, hashPassword, firstName, lastName, typeId, function (err, rows) {
+                        if(err) {
+                            res.json(err);
                         }
-                        var token = jwt.sign(payload, config.secret);
-                        res.json({'user_id': rows.insertId, 'token': token});
-                    }
+                        else {
+                            var payload = {
+                                'wallet': rows.insertId,
+                                'type_id': typeId
+                            }
+                            var token = jwt.sign(payload, config.secret);
+                            res.json({'user_id': rows.insertId, 'token': token});
+                        }
+                    })
                 })
             }
             else {
@@ -59,7 +61,7 @@ loginController.signInWallet = function (req, res) {
         }
         else {
             if (users.length != 0) {
-                LoginModule.compareHashPassword(password, users[0].password, function (isSamePassword) {
+                SecurityUtils.compareHashPassword(password, users[0].password, function (isSamePassword) {
                     if (isSamePassword) {
                         var payload = {
                             'wallet_id': users[0].user_id,
@@ -91,7 +93,7 @@ loginController.signInMerchant = function (req, res) {
         }
         else {
             if (users.length != 0) {
-                LoginModule.compareHashPassword(password, users[0].password, function (isSamePassword) {
+                SecurityUtils.compareHashPassword(password, users[0].password, function (isSamePassword) {
                     if (isSamePassword) {
                         var payload = {
                             'merchant_id': users[0].id,
@@ -125,19 +127,21 @@ loginController.signUpMerchant = function (req, res) {
         }
         else {
             if (users.length == 0) {
-                var hashPassword = bcrypt.hashSync(password, 10)
-                MerchantModule.insertMerchant(email, password, hashPassword, firstName, lastName, typeId, function (err, rows) {
-                    if(err) {
-                        res.json(err);
-                    }
-                    else {
-                        var payload = {
-                            'merchant_id': rows.insertId,
-                            'type_id': typeId
+                //var hashPassword = bcrypt.hashSync(password, 10)
+                SecurityUtils.createHashPassword(password, function (hashPassword) {
+                    MerchantModule.insertMerchant(email, password, hashPassword, firstName, lastName, typeId, function (err, rows) {
+                        if(err) {
+                            res.json(err);
                         }
-                        var token = jwt.sign(payload, config.secret);
-                        res.json({'merchant_id': rows.insertId, 'token': token});
-                    }
+                        else {
+                            var payload = {
+                                'merchant_id': rows.insertId,
+                                'type_id': typeId
+                            }
+                            var token = jwt.sign(payload, config.secret);
+                            res.json({'merchant_id': rows.insertId, 'token': token});
+                        }
+                    })
                 })
             }
             else {
