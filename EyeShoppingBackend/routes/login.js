@@ -2,11 +2,6 @@ var express = require('express');
 var router = express.Router();
 var loginController = require("../controllers/LoginController");
 
-// Get all wallets listnode
-router.get('/allWallets', function(req, res) {
-    loginController.listWallets(req, res);
-});
-
 // Sign up wallet
 router.post('/wallet/signUp', function(req, res) {
     loginController.signUpWallet(req, res);
