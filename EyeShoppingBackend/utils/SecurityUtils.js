@@ -1,6 +1,7 @@
 var bcrypt = require('bcrypt')
 var jwt = require('jsonwebtoken')
-var config = require("../database_utils/config")
+var config = require("../config/config")
+var typeConfig = require("../constants/TypeConfig")
 
 var SecurityUtils = {
 
@@ -27,7 +28,7 @@ var SecurityUtils = {
                 var typeId = decoded.type_id
                 token.typeId = typeId
 
-                if (typeId == 2)
+                if (typeId == typeConfig.wallet_type_id)
                     token.walletId = decoded.wallet_id
                 else
                     token.merchantId = decoded.merchant_id

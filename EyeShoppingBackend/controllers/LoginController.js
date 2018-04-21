@@ -2,7 +2,7 @@ var WalletModule = require("../modules/WalletModule")
 var MerchantModule = require("../modules/MerchantModule")
 var SecurityUtils = require("../utils/SecurityUtils")
 var jwt = require('jsonwebtoken')
-var config = require("../database_utils/config")
+var config = require("../config/config")
 var bcrypt = require('bcrypt')
 
 var loginController = {};
@@ -22,7 +22,7 @@ loginController.signUpWallet = function (req, res) {
             res.json(err);
         }
         else {
-            if (users.length == 0) {
+            if (users == null || users.length == 0) {
                 //var hashPassword = bcrypt.hashSync(password, 10)
                 SecurityUtils.createHashPassword(password, function (hashPassword) {
                     WalletModule.insertWallet(email, password, hashPassword, firstName, lastName, typeId, function (err, rows) {
@@ -60,7 +60,7 @@ loginController.signInWallet = function (req, res) {
             res.json(err);
         }
         else {
-            if (users.length != 0) {
+            if (users == null || users.length != 0) {
                 SecurityUtils.compareHashPassword(password, users[0].password, function (isSamePassword) {
                     if (isSamePassword) {
                         var payload = {
@@ -92,7 +92,7 @@ loginController.signInMerchant = function (req, res) {
             res.json(err);
         }
         else {
-            if (users.length != 0) {
+            if (users == null || users.length != 0) {
                 SecurityUtils.compareHashPassword(password, users[0].password, function (isSamePassword) {
                     if (isSamePassword) {
                         var payload = {
@@ -126,7 +126,7 @@ loginController.signUpMerchant = function (req, res) {
             res.json(err);
         }
         else {
-            if (users.length == 0) {
+            if (users == null || users.length == 0) {
                 //var hashPassword = bcrypt.hashSync(password, 10)
                 SecurityUtils.createHashPassword(password, function (hashPassword) {
                     MerchantModule.insertMerchant(email, password, hashPassword, firstName, lastName, typeId, function (err, rows) {

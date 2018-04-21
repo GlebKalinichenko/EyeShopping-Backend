@@ -1,24 +1,77 @@
-var mysqlDb = require('../database_utils/mysqlconnection')
+var Sequelize = require('sequelize');
+var sequelizeDb = require('../config/databaseconnection')
+
+const Wallet = sequelizeDb.define('Wallet', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        field: 'user_id'
+    },
+
+    firstName: {
+        type: Sequelize.STRING,
+        field: 'first_name'
+    },
+
+    lastName: {
+        type: Sequelize.STRING,
+        field: 'last_name'
+    },
+
+    email: {
+        type: Sequelize.STRING,
+        field: 'email'
+    },
+
+    password: {
+        type: Sequelize.STRING,
+        field: 'password'
+    },
+
+    typeId: {
+        type: Sequelize.INTEGER,
+        field: 'type_id'
+    }
+});
 
 var WalletModule = {
     getAllWallets: function (callback) {
-        mysqlDb.query("SELECT * FROM Wallets;", callback)
+        Wallet.findAll().then(function (wallets) {
+            callback(null, wallets)
+        })
     },
 
     selectWalletById: function (walletId, callback) {
-        mysqlDb.query("SELECT * FROM Wallets WHERE user_id = ?", walletId, callback)
+        Wallet.findById(walletId).then(function (wallets) {
+            callback(null, wallets)
+        })
     },
 
     selectAllWalletsByEmail: function(email, callback) {
-        mysqlDb.query("SELECT * FROM Wallets WHERE email = ?", email, callback)
+        Wallet.find({
+            where: {
+                email: email
+            }
+        }).then(function (wallets) {
+            callback(null, wallets)
+        })
+        //mysqlDb.query("SELECT * FROM Wallets WHERE email = ?", email, callback)
     },
 
     /**
      * SQL query for insert new wallet
      * */
     insertWallet: function (email, password, hashPassword, firstName, lastName, type_id, callback) {
-        var values = [firstName, lastName, email, hashPassword, type_id]
-        mysqlDb.query("INSERT INTO Wallets (first_name, last_name, email, password, type_id) VALUES (?, ?, ?, ?, ?)", values, callback)
+        Wallet.create({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: hashPassword,
+            typeId: type_id
+        }).then(function (newWallet) {
+            callback(null, newWallet)
+        })
     }
 }
 

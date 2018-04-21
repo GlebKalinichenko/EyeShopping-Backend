@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var config = require("../database_utils/config")
+var config = require("../config/config")
 var itemController = require("../controllers/ItemController");
 
 router.get('/items', function(req, res) {

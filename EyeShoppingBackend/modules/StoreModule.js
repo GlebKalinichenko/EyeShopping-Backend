@@ -1,4 +1,4 @@
-var mysqlDb = require('../database_utils/mysqlconnection')
+var mysqlDb = require('../config/mysqlconnection')
 
 var StoreModule = {
     /**

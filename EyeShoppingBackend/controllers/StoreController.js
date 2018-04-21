@@ -1,6 +1,4 @@
 var StoreModule = require("../modules/StoreModule");
-var jwt = require('jsonwebtoken');
-var config = require("../database_utils/config")
 var typeConfig = require("../constants/TypeConfig")
 var storeController = {};
 
@@ -13,22 +11,27 @@ storeController.createStore = function (req, res) {
     var address = req.body.address
     var authHeader = req.header('authorization')
 
-    var decodedHeader = jwt.verify(authHeader, config.secret)
-    var merchantId = decodedHeader.merchant_id
-    var typeId = decodedHeader.type_id
-
-    if (typeConfig.wallet_type_id == typeId) {
-        res.status(404).json({'message': 'Only merchant can create store'})
-        return
-    }
-
-    StoreModule.insertStore(name, description, address, merchantId, function(err, rows) {
-        if (err) res.json(err)
+    SecurityUtils.validateAccessToken(authHeader, function (err, decodedToken) {
+        if (err) {
+            res.send(403, err)
+        }
         else {
-            res.status(200).json({'store_id':  rows.insertId})
+            var merchantId = decodedToken.merchant_id
+            var typeId = decodedToken.type_id
+
+            if (typeConfig.wallet_type_id == typeId) {
+                res.status(404).json({'message': 'Only merchant can create store'})
+                return
+            }
+
+            StoreModule.insertStore(name, description, address, merchantId, function(err, rows) {
+                if (err) res.json(err)
+                else {
+                    res.status(200).json({'store_id':  rows.insertId})
+                }
+            })
         }
     })
-
 };
 
 /**
@@ -41,40 +44,51 @@ storeController.updateStore = function (req, res) {
     var storeId = req.params.storeId
     var authHeader = req.header('authorization')
 
-    var decodedHeader = jwt.verify(authHeader, config.secret)
-    var merchantId = decodedHeader.merchant_id
-    var typeId = decodedHeader.type_id
-
-    if (typeConfig.wallet_type_id == typeId) {
-        res.status(404).json({'message': 'Only merchant can create store'})
-        return
-    }
-
-    StoreModule.updateStore(name, description, address, merchantId, storeId, function(err, rows) {
-        if (err) res.json(err)
+    SecurityUtils.validateAccessToken(authHeader, function (err, decodedToken) {
+        if (err) {
+            res.send(403, err)
+        }
         else {
-            res.status(200).json(rows)
+            var merchantId = decodedToken.merchant_id
+            var typeId = decodedToken.type_id
+
+            if (typeConfig.wallet_type_id == typeId) {
+                res.status(404).json({'message': 'Only merchant can create store'})
+                return
+            }
+
+            StoreModule.updateStore(name, description, address, merchantId, storeId, function (err, rows) {
+                if (err) res.json(err)
+                else {
+                    res.status(200).json(rows)
+                }
+            })
         }
     })
 };
 
 storeController.deleteStore = function (req, res) {
     var authHeader = req.header('authorization')
-    var decodedHeader = jwt.verify(authHeader, config.secret)
-    var merchantId = decodedHeader.merchant_id
-    var typeId = decodedHeader.type_id
 
-    var storeId = req.params.storeId
-
-    if (typeConfig.wallet_type_id == typeId) {
-        res.status(404).json({'message': 'Only merchant can create store'})
-        return
-    }
-
-    StoreModule.deleteStore(storeId, function (err, rows) {
-        if (err) res.json(err)
+    SecurityUtils.validateAccessToken(authHeader, function (err, decodedToken) {
+        if (err) {
+            return res.send(403, err)
+        }
         else {
-            res.status(200).json(rows)
+            var merchantId = decodedHeader.merchant_id
+            var typeId = decodedHeader.type_id
+
+            if (typeConfig.wallet_type_id == typeId) {
+                res.status(404).json({'message': 'Only merchant can create store'})
+                return
+            }
+
+            StoreModule.deleteStore(storeId, function (err, rows) {
+                if (err) res.json(err)
+                else {
+                    res.status(200).json(rows)
+                }
+            })
         }
     })
 }

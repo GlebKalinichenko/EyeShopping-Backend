@@ -12,6 +12,7 @@ var login = require('./routes/login');
 var store = require('./routes/store');
 var wallet = require('./routes/wallet');
 var item = require('./routes/items')
+var test = require('./routes/test')
 
 var app = express();
 
@@ -33,6 +34,7 @@ app.use('/login', login)
 app.use('/store', store)
 app.use('/wallet', wallet)
 app.use('/item', item)
+app.use('/test', test)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
