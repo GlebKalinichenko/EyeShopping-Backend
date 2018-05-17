@@ -56,7 +56,6 @@ var WalletModule = {
         }).then(function (wallets) {
             callback(null, wallets)
         })
-        //mysqlDb.query("SELECT * FROM Wallets WHERE email = ?", email, callback)
     },
 
     /**

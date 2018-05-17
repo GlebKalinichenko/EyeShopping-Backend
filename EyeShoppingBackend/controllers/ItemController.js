@@ -36,9 +36,10 @@ itemController.selectAllItemsWithStore = function(req, res) {
                     res.json(err)
                 }
                 else {
-                    ItemConverter.convertItemsWithStore(items, function (results) {
+                    res.json(results)
+/*                    ItemConverter.convertItemsWithStore(items, function (results) {
                         res.json(results)
-                    })
+                    })*/
                 }
             })
         }

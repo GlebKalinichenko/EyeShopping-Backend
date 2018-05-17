@@ -1,6 +1,27 @@
-var StoreModule = require("../modules/StoreModule");
+var StoreModule = require("../modules/StoreModule")
 var typeConfig = require("../constants/TypeConfig")
+var SecurityUtils = require("../utils/SecurityUtils")
 var storeController = {};
+
+storeController.getStores = function (req, res) {
+    var authHeader = req.header('authorization')
+
+    SecurityUtils.validateAccessToken(authHeader, function (err, decodedToken) {
+        if (err) {
+            res.send(403, err)
+        }
+        else {
+            StoreModule.getAllStores(function (err, stores) {
+                if (err) {
+                    res.json(err)
+                }
+                else {
+                    res.json(stores)
+                }
+            })
+        }
+    })
+}
 
 /**
  * Add new store endpoint
@@ -9,6 +30,7 @@ storeController.createStore = function (req, res) {
     var name = req.body.name
     var description = req.body.description
     var address = req.body.address
+    var merchantId = req.body.merchantId
     var authHeader = req.header('authorization')
 
     SecurityUtils.validateAccessToken(authHeader, function (err, decodedToken) {
@@ -16,7 +38,6 @@ storeController.createStore = function (req, res) {
             res.send(403, err)
         }
         else {
-            var merchantId = decodedToken.merchant_id
             var typeId = decodedToken.type_id
 
             if (typeConfig.wallet_type_id == typeId) {
@@ -27,7 +48,7 @@ storeController.createStore = function (req, res) {
             StoreModule.insertStore(name, description, address, merchantId, function(err, rows) {
                 if (err) res.json(err)
                 else {
-                    res.status(200).json({'store_id':  rows.insertId})
+                    res.status(200).json({'id':  rows.id})
                 }
             })
         }
@@ -41,6 +62,7 @@ storeController.updateStore = function (req, res) {
     var name = req.body.name
     var description = req.body.description
     var address = req.body.address
+    var merchantId = req.body.merchantId
     var storeId = req.params.storeId
     var authHeader = req.header('authorization')
 
@@ -49,7 +71,6 @@ storeController.updateStore = function (req, res) {
             res.send(403, err)
         }
         else {
-            var merchantId = decodedToken.merchant_id
             var typeId = decodedToken.type_id
 
             if (typeConfig.wallet_type_id == typeId) {
@@ -60,7 +81,7 @@ storeController.updateStore = function (req, res) {
             StoreModule.updateStore(name, description, address, merchantId, storeId, function (err, rows) {
                 if (err) res.json(err)
                 else {
-                    res.status(200).json(rows)
+                    res.status(200).json({message: 'Store was success updated'})
                 }
             })
         }
@@ -68,6 +89,7 @@ storeController.updateStore = function (req, res) {
 };
 
 storeController.deleteStore = function (req, res) {
+    var storeId = req.params.storeId
     var authHeader = req.header('authorization')
 
     SecurityUtils.validateAccessToken(authHeader, function (err, decodedToken) {
@@ -75,8 +97,7 @@ storeController.deleteStore = function (req, res) {
             return res.send(403, err)
         }
         else {
-            var merchantId = decodedHeader.merchant_id
-            var typeId = decodedHeader.type_id
+            var typeId = decodedToken.type_id
 
             if (typeConfig.wallet_type_id == typeId) {
                 res.status(404).json({'message': 'Only merchant can create store'})
@@ -86,7 +107,7 @@ storeController.deleteStore = function (req, res) {
             StoreModule.deleteStore(storeId, function (err, rows) {
                 if (err) res.json(err)
                 else {
-                    res.status(200).json(rows)
+                    res.status(200).json({'message': 'Store was removed'})
                 }
             })
         }

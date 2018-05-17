@@ -2,6 +2,11 @@ var express = require('express');
 var router = express.Router();
 var storeController = require("../controllers/StoreController");
 
+// Get stores
+router.get('/stores', function(req, res) {
+    storeController.getStores(req, res);
+});
+
 // Create store
 router.post('/createStore', function(req, res) {
     storeController.createStore(req, res);
